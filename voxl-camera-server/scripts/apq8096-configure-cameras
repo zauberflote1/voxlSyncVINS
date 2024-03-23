@@ -1,0 +1,263 @@
+#!/bin/bash
+################################################################################
+# Copyright 2023 ModalAI Inc.
+#
+# Redistribution and use in source and binary forms, with or without
+# modification, are permitted provided that the following conditions are met:
+#
+# 1. Redistributions of source code must retain the above copyright notice,
+#    this list of conditions and the following disclaimer.
+#
+# 2. Redistributions in binary form must reproduce the above copyright notice,
+#    this list of conditions and the following disclaimer in the documentation
+#    and/or other materials provided with the distribution.
+#
+# 3. Neither the name of the copyright holder nor the names of its contributors
+#    may be used to endorse or promote products derived from this software
+#    without specific prior written permission.
+#
+# 4. The Software is used solely in conjunction with devices provided by
+#    ModalAI Inc.
+#
+# THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+# AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+# IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+# ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE
+# LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+# CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+# SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+# INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+# CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+# ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+# POSSIBILITY OF SUCH DAMAGE.
+################################################################################
+
+set -e
+
+. /home/root/.profile.d/modal_bash_formatting.sh
+
+## different dirvers for the 7251 based on settings
+FILE_OV7251_10BIT_ORIGINAL="/usr/lib/libmmcamera_ov7251.so"
+FILE_OV7251_8BIT="/usr/lib/libmmcamera_ov7251_8bit.so"
+FILE_OV7251_8BIT_HFLIP="/usr/lib/libmmcamera_ov7251_hflip_8bit.so"
+FILE_OV7251_8BIT_VFLIP="/usr/lib/libmmcamera_ov7251_vflip_8bit.so"
+FILE_OV7251_8BIT_ROT="/usr/lib/libmmcamera_ov7251_rot180_8bit.so"
+
+FILE_OV7251_TRACKING="/usr/lib/libmmcamera_ov7251_tracking.so"
+FILE_OV7251_STEREO="/usr/lib/libmmcamera_ov7251_stereo.so"
+
+# options set by arguments
+CAM_CONFIG_ID="-1"
+ROTATE_TRACKING=0
+ROTATE_STEREO=0
+ENABLE_CAMERA_SERVER=1
+
+
+print_usage () {
+    echo ""
+    echo "For M500 & Flight Deck or uSeeker & VOXLCAM use presets:"
+    echo "voxl-configure-cameras m500_flight_deck"
+    echo "voxl-configure-cameras seeker_voxlcam"
+    echo ""
+    echo "For more flexibility, use the general use case:"
+    echo "voxl-configure-cameras <configuration-id> <optional args>"
+    echo ""
+    echo "optional arguments are as follows:"
+    echo ""
+    echo "m500_flight_deck  - default for M500 and Flight Deck, no config ID needed"
+    echo "seeker_voxlcam    - default for seeker and VOXLCAM, no config ID needed"
+    echo "rotate_tracking   - rotates the tracking camera image 180 degrees"
+    echo "rotate_stereo     - rotates the individual stereo images 180 degrees"
+    echo "disable           - disables voxl-camera-server"
+    echo "help              - show this help text"
+    echo ""
+    echo "If no configuration-id or arguments are given, the user will be"
+    echo "prompted with questions to help complete configuration"
+    echo ""
+    echo "available camera configurations are as follows:"
+    echo ""
+    apq8096-print-camera-configs
+    echo ""
+    exit 0
+}
+
+parse_opts(){
+
+    while [[ $# -gt 0 ]]; do
+
+        ## convert argument to lower case for robustness
+        arg=$(echo "$1" | tr '[:upper:]' '[:lower:]')
+
+        ## parse arguments
+        case ${arg} in
+            "h"|"-h"|"help"|"--help")
+                print_usage
+                exit 0
+                ;;
+            "disable")
+                if [[ "$CAM_CONFIG_ID" == "-1" ]]; then
+                    CAM_CONFIG_ID=0
+                fi
+                ENABLE_CAMERA_SERVER=0
+                ;;
+            "rotate_tracking")
+                ROTATE_TRACKING=1
+                ;;
+            "rotate_stereo")
+                ROTATE_STEREO=1
+                ;;
+            "m500_flight_deck")
+                CAM_CONFIG_ID=3 # Hires + Stereo + Tracking
+                ROTATE_TRACKING=0
+                ROTATE_STEREO=0
+                ENABLE_CAMERA_SERVER=1
+                ;;
+            "seeker_voxlcam")
+                CAM_CONFIG_ID=7 # TOF + Stereo + Tracking
+                ROTATE_TRACKING=0
+                ROTATE_STEREO=1
+                ENABLE_CAMERA_SERVER=1
+                ;;
+            *)
+                ## all other arguments are either config id numbers or invalid
+                if [[ "$arg" =~ ^[0-9]+$ ]]; then
+                    CAM_CONFIG_ID=$arg
+                else
+                    echo "invalid option $arg"
+                    print_usage
+                    exit 1
+                fi
+        esac
+        shift
+    done
+}
+
+
+################################################################################
+## actual start of execution
+################################################################################
+
+parse_opts $@
+
+if [[ "$CAM_CONFIG_ID" == "-1" ]]; then
+    echo "ERROR: missing camera config ID"
+    exit 1
+fi
+
+################################################################################
+## now actually configure everything based on the variables set above
+################################################################################
+echo "Camera Configuration: $CAM_CONFIG_ID"
+
+CAM_LIST=()
+case $CAM_CONFIG_ID in
+    0) # none
+        ENABLE_CAMERA_SERVER=0;
+        ;;
+    1) #Tracking + Stereo
+        CAM_LIST+=("tracking:ov7251:0")
+        CAM_LIST+=("stereo:ov7251:1:2")
+        ;;
+    2) # Tracking Only
+        CAM_LIST+=("tracking:ov7251:0")
+        ;;
+    3) # Hires + Stereo + Tracking
+        CAM_LIST+=("tracking:ov7251:1")
+        CAM_LIST+=("hires:imx214:0")
+        CAM_LIST+=("stereo:ov7251:2:3")
+        ;;
+    4) # Hires + Tracking
+        CAM_LIST+=("tracking:ov7251:1")
+        CAM_LIST+=("hires:imx214:0")
+        ;;
+    5) # TOF + Tracking
+        CAM_LIST+=("tracking:ov7251:1")
+        CAM_LIST+=("tof:pmd-tof:0")
+        ;;
+    6) # Hires + TOF + Tracking
+        CAM_LIST+=("tracking:ov7251:2")
+        CAM_LIST+=("tof:pmd-tof:1")
+        CAM_LIST+=("hires:imx214:0")
+        ;;
+    7) # TOF + Stereo + Tracking
+        CAM_LIST+=("tof:pmd-tof:0")
+        CAM_LIST+=("tracking:ov7251:1")
+        CAM_LIST+=("stereo:ov7251:2:3")
+        ;;
+    8) # Hires only
+        CAM_LIST+=("hires:imx214:0")
+        ;;
+    9) # TOF only
+        CAM_LIST+=("tof:pmd-tof:0")
+        ;;
+    10) # Stereo 7251 only
+        CAM_LIST+=("stereo:ov7251:0:1")
+        ;;
+    11) # 6-cam
+        echo "Configuration ${CAM_CONFIG_ID} is not supported on the APQ8096 Platform"
+        exit -1
+        ;;
+    12) # Stereo 9782 only
+        CAM_LIST+=("stereo:ov9782:0:1")
+        ;;
+    13) # Hires + 7251 stereo
+        CAM_LIST+=("hires:imx214:0")
+        CAM_LIST+=("stereo:ov7251:1:2")
+        ;;
+    14) # Stereo 9782 + TOF + Tracking
+        CAM_LIST+=("tof:pmd-tof:0")
+        CAM_LIST+=("tracking:ov7251:1")
+        CAM_LIST+=("stereo:ov9782:2:3")
+        ;;
+    *)
+        echo "invalid option"
+        echo "Please provide a camera configuration-id"
+        echo ""
+        echo "available camera configurations are as follows:"
+        apq8096-print-camera-configs
+        exit -1
+        ;;
+esac
+
+camera-server-config-helper ${CAM_LIST[@]}
+## in system images newer than 3.3.0, set up the 7251 drivers
+if [ -f ${FILE_OV7251_8BIT} ]; then
+
+    ## create correct symlinks for tracking and stereo cameras
+    if [ "${ROTATE_TRACKING}" == "0" ]; then
+        echo "making symlink for tracking upright 8-bit"
+        ln -sf ${FILE_OV7251_8BIT} ${FILE_OV7251_TRACKING}
+    else
+        echo "making symlink for tracking rotated 8-bit"
+        ln -sf ${FILE_OV7251_8BIT_ROT} ${FILE_OV7251_TRACKING}
+    fi
+    if [ "${ROTATE_STEREO}" == "0" ]; then
+        echo "making symlink for stereo upright 8-bit"
+        ln -sf ${FILE_OV7251_8BIT} ${FILE_OV7251_STEREO}
+    else
+        echo "making symlink for stereo rotated 8-bit"
+        ln -sf ${FILE_OV7251_8BIT_ROT} ${FILE_OV7251_STEREO}
+    fi
+
+## on older system images without new drivers we can't use the new
+## config XML so just warn the user
+else
+    echo "WARNING Please upgrade to VOXL system image 3.3.0 or newer"
+    echo "for optimized tracking/stereo performance and rotation."
+    echo ""
+fi
+
+## Enable or disable voxl-camera-server
+if [ "${ENABLE_CAMERA_SERVER}" == "0" ]; then
+    echo "stopping and disabling voxl-camera-server"
+    systemctl disable voxl-camera-server
+    systemctl stop voxl-camera-server
+else
+    echo "enabling and starting voxl-camera-server"
+    systemctl enable voxl-camera-server
+fi
+
+echo "Done Configuring Cameras"
+
+
+exit 0

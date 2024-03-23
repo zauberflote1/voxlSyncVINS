@@ -1,0 +1,6 @@
+## voxl-cross is based on 18.04 bionic, but we need gcc4.9 which
+## is only available in the 16.04 repos so add it here
+
+deb [arch=amd64] http://mirrors.kernel.org/ubuntu/ xenial main
+deb [arch=amd64] http://mirrors.kernel.org/ubuntu/ xenial universe
+

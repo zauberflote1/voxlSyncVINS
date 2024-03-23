@@ -1,0 +1,7 @@
+{
+    "files.associations": {
+        "span": "cpp",
+        "chrono": "cpp",
+        "atomic": "cpp"
+    }
+}

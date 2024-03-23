@@ -1,0 +1,14 @@
+*.ipk
+*.deb
+.bash_history
+catkin_ws.tar
+.vscode
+misc_files
+build
+build32
+build64
+pkg/IPK
+pkg/DEB
+pkg/data
+*.core
+.vscode

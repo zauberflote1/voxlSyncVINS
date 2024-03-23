@@ -1,0 +1,8 @@
+Package: voxl-mpa-to-ros
+Version: 0.3.7
+Section: base
+Priority: optional
+Architecture: arm64
+Depends:libmodal-pipe(>=2.6.0), libmodal-json, voxl-mpa-tools(>=0.2.10)
+Maintainer: Zach Lowell <zachary.lowell@ascendengineer.com>
+Description: ROSNode converting MPA pipes

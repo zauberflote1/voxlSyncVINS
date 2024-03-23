@@ -1,0 +1,15 @@
+
+before_script:
+    - git clone -q --depth 1 https://gitlab.com/voxl-public/voxl-sdk/ci-tools
+
+include:
+  - project: 'voxl-public/voxl-sdk/ci-tools'
+    file: '/pipeline-configs/common.yml'
+  - project: 'voxl-public/voxl-sdk/ci-tools'
+    file: '/pipeline-configs/qrb5165-emulator.yml'
+  - project: 'voxl-public/voxl-sdk/ci-tools'
+    file: '/pipeline-configs/apq8096-emulator.yml'
+
+variables:
+    GIT_SUBMODULE_STRATEGY: recursive
+

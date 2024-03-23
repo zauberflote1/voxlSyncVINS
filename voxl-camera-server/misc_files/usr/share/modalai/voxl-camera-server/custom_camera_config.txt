@@ -1,0 +1,82 @@
+#!/bin/bash
+
+################################################################################
+#
+# This file allows setting of custom camera configurations by defining what
+# sensors are plugged into which port.
+#
+# There is no guarantee that any arbitrary configuration will work. Only the
+# predefined camera configs at https://docs.modalai.com/voxl2-camera-configs/
+# are supported.
+#
+# each slot can be one of the following sensors:
+#
+# pmd-tof
+# ov7251
+# ov7251-combo
+# ov9782
+# ov9782-combo
+# ar0144
+# imx214
+# imx412
+# imx678
+#
+#
+# When using a combo mode pair, you must also add a JX_COMBO_MODE field which
+# specifies is the pair is to be set up as either a stereo pair ordered
+# left-right, right-left, or treated as two independent cameras. If you are
+# using a cambo-mode flex but only physically connect one of the two cameras
+# then select "single" it does not matter which one you connect.
+#
+# For example:
+# J6_LOWER_COMBO_MODE="left-right"
+# J6_LOWER_COMBO_MODE="right-left"
+# J6_LOWER_COMBO_MODE="independent"
+# J6_LOWER_COMBO_MODE="single"
+#
+# when running "independent" combo mode, also add a NAME2 field for the second cam
+# e.g J6_LOWER_NAME2="tracking_rear"
+#
+# for all sensors except TOF, you can specify a "rotate" flag to
+# rotate the image 180 degrees e.g. J6_LOWER_ROTATE="true"
+#
+#
+# Once configured, this file should live in /data/modalai/custom_camera-config.txt
+# then run voxl-configure-cameras custom to load it in
+#
+#
+# cp /usr/share/modalai/voxl-camera-server/custom_camera_config.txt /data/modalai/
+#
+# We also suggest changing your /data/modalai/sku.txt file to have a camera
+# config term "CC" such as MRB-D0005-4-V2-CC
+################################################################################
+
+
+J6_LOWER_SENSOR=""
+J6_LOWER_NAME=""
+J6_LOWER_ROTATE="false"
+
+
+J6_UPPER_SENSOR=""
+J6_UPPER_NAME=""
+J6_UPPER_ROTATE="false"
+
+
+J7_LOWER_SENSOR=""
+J7_LOWER_NAME=""
+J7_LOWER_ROTATE="false"
+
+
+J7_UPPER_SENSOR=""
+J7_UPPER_NAME=""
+J7_UPPER_ROTATE="false"
+
+
+J8_LOWER_SENSOR=""
+J8_LOWER_NAME=""
+J8_LOWER_ROTATE="false"
+
+
+J8_UPPER_SENSOR=""
+J8_UPPER_NAME=""
+J8_UPPER_ROTATE="false"

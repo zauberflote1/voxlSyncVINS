@@ -1,0 +1,12 @@
+
+_voxl_image_stats(){
+
+	#safety check in case the user has not installed voxl-utils >= 0.6.2, which
+	# contains the voxl tab complete function
+	if type -t _voxl_tab_complete | grep -q "function" ; then
+		_voxl_tab_complete "camera_image_metadata_t"
+	fi
+
+}
+
+complete -F _voxl_image_stats voxl-image-stats

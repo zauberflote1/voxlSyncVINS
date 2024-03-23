@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+
+<!--
+/****************************************************************************
+ * Copyright 2021 Modal AI
+ * Complete MPA launch file exposes all node params as arguments
+ ****************************************************************************/
+-->
+
+
+<launch>
+    <!-- start mpa node -->
+    <node name="voxl_mpa_to_ros_node" type="voxl_mpa_to_ros_node" pkg="voxl_mpa_to_ros" output="screen" />
+
+</launch>
+

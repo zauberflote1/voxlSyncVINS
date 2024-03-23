@@ -1,0 +1,24 @@
+
+_voxl-configure-cameras(){
+
+    case $(voxl-platform) in
+
+        M0054 | M0052)
+            OPTS="custom help disable dry-run"
+            ;;
+
+        VOXL)
+            OPTS="disable help m500_flight_deck seeker_voxlcam rotate_tracking rotate_stereo"
+            ;;
+
+        *)
+            exit -1;
+            ;;
+    esac
+
+
+    COMPREPLY=( $(compgen -W '${OPTS}' -- ${COMP_WORDS[COMP_CWORD]}) )
+    return 0
+}
+
+complete -F _voxl-configure-cameras voxl-configure-cameras

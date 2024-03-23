@@ -1,0 +1,48 @@
+0.3.7
+    * fix publishing stereo images
+    * fix publishing AI detections from voxl-tflite-server
+0.3.6
+    * bump for libmodal-pipe dependency
+0.3.5
+    * changed timestamps for all interfaces to UNIX timestamp
+0.3.4
+    * remove egregiously verbose print statement in camera callback
+0.3.3
+    * make sure to quit point cloud callback safely on error
+0.3.2
+    * remove noisy postinst
+0.3.1
+    * fix broken architecture
+0.3.0
+    * qrb5 support and new package structure
+0.2.3
+    * New CI Stuff
+0.2.2
+    * added tflite object detection interface
+0.2.1
+    * fix bug with vio interface trying to read via camera helper
+0.2.0
+    * temporarily rename package to voxl-nodes since opkg still does not upgrade to the new name smoothly
+0.0.9
+    * make sure to conflict/replace the older voxl-nodes to allow smooth upgrade
+0.0.8
+    * now standalone project, no longer part of voxl-nodes
+    * restructure to no longer use a complicated launch file, dynamically finds pipes
+0.0.7
+    * update interfaces to pass by reference
+0.0.6
+    * add tflite and dfs interfaces to default published
+0.0.5
+    * add pointcloud interface
+    * update all interfaces to use libmodal_pipe 2.0
+0.0.4
+    * add hires and tof data transfer
+0.0.3
+    * add vio data transfer
+    * interfaces will recover if their servers restart
+0.0.2
+    * add imu data transfer
+    * add launch file with sample parameters
+0.0.2
+    * baseline transfer of camera data from mpa to ros
+

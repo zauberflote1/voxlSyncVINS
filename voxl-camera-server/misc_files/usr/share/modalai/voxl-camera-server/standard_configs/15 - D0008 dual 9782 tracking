@@ -1,0 +1,9 @@
+#!/bin/bash
+
+# for description see:
+# /usr/share/modalai/voxl-camera-server/custom_camera_config.txt
+
+J6_LOWER_SENSOR="ov9782-combo"
+J6_LOWER_NAME="trackingL"
+J6_LOWER_NAME2="trackingR"
+J6_LOWER_COMBO_MODE="independent"

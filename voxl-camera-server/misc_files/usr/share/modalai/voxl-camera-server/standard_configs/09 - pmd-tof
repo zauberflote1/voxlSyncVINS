@@ -1,0 +1,9 @@
+#!/bin/bash
+
+# for description see:
+# /usr/share/modalai/voxl-camera-server/custom_camera_config.txt
+
+J6_LOWER_SENSOR="pmd-tof"
+J6_LOWER_NAME="tof"
+
+

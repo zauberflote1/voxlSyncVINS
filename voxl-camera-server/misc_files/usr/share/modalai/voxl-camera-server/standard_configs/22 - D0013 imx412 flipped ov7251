@@ -1,0 +1,16 @@
+#!/bin/bash
+
+# for description see:
+# /usr/share/modalai/voxl-camera-server/custom_camera_config.txt
+
+
+
+
+
+J7_LOWER_SENSOR="ov7251"
+J7_LOWER_NAME="tracking"
+J7_LOWER_ROTATE="false"
+
+J7_UPPER_SENSOR="imx412"
+J7_UPPER_NAME="hires"
+J7_UPPER_ROTATE="true"

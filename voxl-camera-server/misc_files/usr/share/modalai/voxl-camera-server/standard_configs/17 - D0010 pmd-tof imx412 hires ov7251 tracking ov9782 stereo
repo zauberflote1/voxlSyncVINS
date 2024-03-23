@@ -1,0 +1,24 @@
+#!/bin/bash
+
+# for description see:
+# /usr/share/modalai/voxl-camera-server/custom_camera_config.txt
+
+J6_LOWER_SENSOR="pmd-tof"
+J6_LOWER_NAME="tof"
+
+
+J7_LOWER_SENSOR="imx412"
+J7_LOWER_NAME="hires"
+J7_LOWER_ROTATE="false"
+
+
+J7_UPPER_SENSOR="ov7251"
+J7_UPPER_NAME="tracking"
+J7_UPPER_ROTATE="false"
+
+
+J8_LOWER_SENSOR="ov9782-combo"
+J8_LOWER_NAME="stereo"
+J8_LOWER_COMBO_MODE="left-right"
+J8_LOWER_ROTATE="false"
+

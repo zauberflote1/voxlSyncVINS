@@ -1,0 +1,8 @@
+Package: voxl-cross
+Version: 2.7
+Section: base
+Priority: optional
+Architecture: arm64
+Provides: cci-direct-support
+Maintainer: james@modalai.com
+Description: dummy meta package provides other packages to make apt happy when installing build dependencies

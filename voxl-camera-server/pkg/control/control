@@ -1,0 +1,11 @@
+Package: voxl-camera-server
+Version: 1.8.10
+Section: base
+Priority: optional
+Architecture: arm64
+Depends: libmodal-pipe(>=2.8.1),libmodal-json,libmodal-journal,libmodal-exposure(>=0.0.8), libvoxl-cutils, voxl-cpu-monitor(>=0.4.2), libvoxl-cci-direct, lib32-libpmd
+Conflicts: qrb5165-camera-server, apq8096-camera-server, voxl-utils(<=1.0.2)
+Provides: qrb5165-camera-server(=1.0.0), apq8096-camera-server(=1.0.0)
+Replaces: qrb5165-camera-server, apq8096-camera-server
+Maintainer: alex.gardner@modalai.com
+Description: publishes camera frames over named pipe interface
