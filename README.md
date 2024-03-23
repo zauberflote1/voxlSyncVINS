@@ -4,7 +4,7 @@ This a modified fork from the original ModalAI Gitlab. Please refer to their rep
 ### Modifications
 - Removed Subscriber Count for Publishing/ThreadManager Simplification
 - Ensured Timestamps were in order for both IMU and Stereo Interface (NOT Artificially)
-- Reduce tolerance difference between Stereo images at the driver level
+- Reduced tolerance difference between Stereo images at the driver level
 ### Future Development
 - ROS2 Mods
 - Improve Software Sync of Stereo Images for combo OV sensor
