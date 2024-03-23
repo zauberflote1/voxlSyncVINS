@@ -1,5 +1,5 @@
 /*******************************************************************************
- * CHANGED THE DISCREPANCY OF THE STEREO FROM 30MS TO 1MS 
+ * CHANGED THE DISCREPANCY OF THE STEREO FROM 30MS TO 5MS 
  * 
  * Copyright 2023 ModalAI Inc.
  *
