@@ -8,5 +8,5 @@ This a modified fork from the original ModalAI Gitlab. Please refer to their rep
 ### Future Development
 - ROS2 Mods
 - Improve Software Sync of Stereo Images for combo OV sensor
-- Improve VOXL2 IMU driver Timestamp ordering (not PX4 IMU) 
+- Improve VOXL2 IMU driver Timestamp ordering and stabilize sampling rate (not PX4 IMU) 
 
