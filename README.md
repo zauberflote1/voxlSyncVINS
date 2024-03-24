@@ -5,6 +5,8 @@ This a modified fork from the original ModalAI Gitlab. Please refer to their rep
 - Removed Subscriber Count for Publishing/ThreadManager Simplification
 - Ensured Timestamps were in order for both IMU and Stereo Interface (NOT Artificially)
 - Reduced tolerance difference between Stereo images at the driver level
+- Removed FIFO buffer from the IMU driver, read and pipe each sample (Note that ICM-42688 Interface is 24 MHz SPI)
+- Changed sleep configuration post-reading a sample for 800us (0us reaches close to theoretical max at significant CPU usage increase) 
 ### Future Development
 - ROS2 Mods
 - Improve Software Sync of Stereo Images for combo OV sensor
