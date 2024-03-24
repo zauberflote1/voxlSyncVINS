@@ -1,0 +1,11 @@
+
+_voxl-configure-imu(){
+	local OPTS=('help enable factory_enable disable')
+	COMPREPLY=()
+	if [ "$COMP_CWORD" -eq 1 ]; then
+		COMPREPLY=( $(compgen -W '${OPTS}' -- ${COMP_WORDS[COMP_CWORD]}) )
+		return 0
+	fi
+}
+
+complete -F _voxl-configure-imu voxl-configure-imu

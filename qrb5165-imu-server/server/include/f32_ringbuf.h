@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright 2020 ModalAI Inc.
+ * Copyright 2022 ModalAI Inc.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -31,43 +31,40 @@
  * POSSIBILITY OF SUCH DAMAGE.
  ******************************************************************************/
 
-#ifndef IMU_MPA_INTERFACE
-#define IMU_MPA_INTERFACE
+#ifndef F32_RINGBUF_H
+#define F32_RINGBUF_H
 
-#include <ros/ros.h>
-#include <sensor_msgs/Imu.h>
-
-#include "generic_interface.h"
-
-
-class IMUInterface: public GenericInterface
-{
-public:
-    bool firstPckt{true}; //flag for first image in stereo pair
-    ros::Time prevTS;//prev timestamp for sync ordering of stereo images
-    IMUInterface(ros::NodeHandle rosNodeHandle,
-                 ros::NodeHandle rosNodeHandleParams,
-                 const char*     name);
-
-    ~IMUInterface() { };
-
-    int  GetNumClients();
-    void AdvertiseTopics();
-    void StopAdvertising();
-
-
-    sensor_msgs::Imu& GetImuMsg(){
-        return m_imuMsg;
-    }
-
-    ros::Publisher& GetPublisher(){
-        return m_rosPublisher;
-    }
-
-private:
-
-    sensor_msgs::Imu               m_imuMsg;                ///< Imu message
-    ros::Publisher                 m_rosPublisher;          ///< Imu publisher
-
-};
+#ifdef __cplusplus
+extern "C" {
 #endif
+
+
+typedef struct f32_ringbuf_t {
+    float* d;      ///< pointer to dynamically allocated data
+    int size;       ///< number of elements the buffer can hold
+    int index;      ///< index of the most recently added value
+    int initialized;///< flag indicating if memory has been allocated for the buffer
+} f32_ringbuf_t;
+
+#define F32_RINGBUF_INITIALIZER {\
+    .d = NULL,\
+    .size = 0,\
+    .index = 0,\
+    .initialized = 0}
+
+
+f32_ringbuf_t f32_ringbuf_empty(void);
+int   f32_ringbuf_alloc(f32_ringbuf_t* buf, int size);
+int   f32_ringbuf_free(f32_ringbuf_t* buf);
+int   f32_ringbuf_reset(f32_ringbuf_t* buf);
+int   f32_ringbuf_insert(f32_ringbuf_t* buf, float val);
+float f32_ringbuf_get_value(f32_ringbuf_t* buf, int position);
+int   f32_ringbuf_copy_out_n_newest(f32_ringbuf_t* buf, int n, float* out);
+
+
+#ifdef __cplusplus
+}
+#endif
+
+
+#endif // F32_RINGBUF_H

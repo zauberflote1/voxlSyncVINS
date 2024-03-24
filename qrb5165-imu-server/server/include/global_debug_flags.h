@@ -31,43 +31,18 @@
  * POSSIBILITY OF SUCH DAMAGE.
  ******************************************************************************/
 
-#ifndef IMU_MPA_INTERFACE
-#define IMU_MPA_INTERFACE
+/**
+ * any C file that wants to print debug messages that the user specifies via
+ * command line args should include this header. variables are defined in main.c
+ * and set at the beginning on main()
+ */
 
-#include <ros/ros.h>
-#include <sensor_msgs/Imu.h>
+#ifndef GLOBAL_DEBUG_FLAGS_H
+#define GLOBAL_DEBUG_FLAGS_H
 
-#include "generic_interface.h"
-
-
-class IMUInterface: public GenericInterface
-{
-public:
-    bool firstPckt{true}; //flag for first image in stereo pair
-    ros::Time prevTS;//prev timestamp for sync ordering of stereo images
-    IMUInterface(ros::NodeHandle rosNodeHandle,
-                 ros::NodeHandle rosNodeHandleParams,
-                 const char*     name);
-
-    ~IMUInterface() { };
-
-    int  GetNumClients();
-    void AdvertiseTopics();
-    void StopAdvertising();
+extern int en_print_fifo_count;
+extern int en_print_data;
+extern int en_print_timesync;
 
 
-    sensor_msgs::Imu& GetImuMsg(){
-        return m_imuMsg;
-    }
-
-    ros::Publisher& GetPublisher(){
-        return m_rosPublisher;
-    }
-
-private:
-
-    sensor_msgs::Imu               m_imuMsg;                ///< Imu message
-    ros::Publisher                 m_rosPublisher;          ///< Imu publisher
-
-};
-#endif
+#endif // end #define GLOBAL_DEBUG_FLAGS_H

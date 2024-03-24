@@ -31,43 +31,9 @@
  * POSSIBILITY OF SUCH DAMAGE.
  ******************************************************************************/
 
-#ifndef IMU_MPA_INTERFACE
-#define IMU_MPA_INTERFACE
 
-#include <ros/ros.h>
-#include <sensor_msgs/Imu.h>
-
-#include "generic_interface.h"
+#include <stdint.h>
 
 
-class IMUInterface: public GenericInterface
-{
-public:
-    bool firstPckt{true}; //flag for first image in stereo pair
-    ros::Time prevTS;//prev timestamp for sync ordering of stereo images
-    IMUInterface(ros::NodeHandle rosNodeHandle,
-                 ros::NodeHandle rosNodeHandleParams,
-                 const char*     name);
-
-    ~IMUInterface() { };
-
-    int  GetNumClients();
-    void AdvertiseTopics();
-    void StopAdvertising();
-
-
-    sensor_msgs::Imu& GetImuMsg(){
-        return m_imuMsg;
-    }
-
-    ros::Publisher& GetPublisher(){
-        return m_rosPublisher;
-    }
-
-private:
-
-    sensor_msgs::Imu               m_imuMsg;                ///< Imu message
-    ros::Publisher                 m_rosPublisher;          ///< Imu publisher
-
-};
-#endif
+int64_t calc_filtered_ts_ns(int64_t time_before_read, int records, double* clock_ratio,\
+							int64_t last_ts_ns, double odr, int last_read_was_good);

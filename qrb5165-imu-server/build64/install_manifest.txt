@@ -1,0 +1,4 @@
+/usr/include/voxl_imu_server.h
+/usr/bin/voxl-imu-server
+/usr/bin/voxl-calibrate-imu
+/usr/bin/voxl-calibrate-imu-temp

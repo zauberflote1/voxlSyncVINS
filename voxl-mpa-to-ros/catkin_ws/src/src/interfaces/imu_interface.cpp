@@ -97,8 +97,11 @@ static void _helper_cb(__attribute__((unused))int ch, char* data, int bytes, voi
     int n_packets;
     imu_data_t* data_array = pipe_validate_imu_data_t(data, bytes, &n_packets);
     if(data_array == NULL) return;
-    auto last_timestamp = _clock_monotonic_to_ros_time(data_array[0].timestamp_ns);
     IMUInterface *interface = (IMUInterface *) context;
+    if (interface->firstPckt){
+        interface->firstPckt = false;
+        interface->prevTS = _clock_monotonic_to_ros_time(data_array[0].timestamp_ns);
+    }
     if(interface->GetState() != ST_RUNNING) return;
     ros::Publisher& publisher = interface->GetPublisher();
     sensor_msgs::Imu& imu = interface->GetImuMsg();
@@ -109,7 +112,7 @@ static void _helper_cb(__attribute__((unused))int ch, char* data, int bytes, voi
 
     //publish all the samples
     for(int i=0;i<n_packets;i++){
-        if (_clock_monotonic_to_ros_time(data_array[i].timestamp_ns)<last_timestamp){
+        if (_clock_monotonic_to_ros_time(data_array[i].timestamp_ns)<interface->prevTS){
              continue;
         }
         
@@ -125,7 +128,7 @@ static void _helper_cb(__attribute__((unused))int ch, char* data, int bytes, voi
         imu.linear_acceleration.z = data_array[i].accl_ms2[2];
 
         publisher.publish(imu);
-        last_timestamp = _clock_monotonic_to_ros_time(data_array[i].timestamp_ns);
+        interface->prevTS = _clock_monotonic_to_ros_time(data_array[i].timestamp_ns);
 
     }
 

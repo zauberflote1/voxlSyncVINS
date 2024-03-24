@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright 2020 ModalAI Inc.
+ * Copyright 2021 ModalAI Inc.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -31,43 +31,70 @@
  * POSSIBILITY OF SUCH DAMAGE.
  ******************************************************************************/
 
-#ifndef IMU_MPA_INTERFACE
-#define IMU_MPA_INTERFACE
+#include <stdio.h>
+#include <unistd.h>
+#include <time.h>
+#include <errno.h>
 
-#include <ros/ros.h>
-#include <sensor_msgs/Imu.h>
-
-#include "generic_interface.h"
+#include "misc.h"
 
 
-class IMUInterface: public GenericInterface
+int64_t my_time_monotonic_ns()
 {
-public:
-    bool firstPckt{true}; //flag for first image in stereo pair
-    ros::Time prevTS;//prev timestamp for sync ordering of stereo images
-    IMUInterface(ros::NodeHandle rosNodeHandle,
-                 ros::NodeHandle rosNodeHandleParams,
-                 const char*     name);
+	struct timespec ts;
+	if(clock_gettime(CLOCK_MONOTONIC, &ts)){
+		fprintf(stderr,"ERROR calling clock_gettime\n");
+		return -1;
+	}
+	return (int64_t)ts.tv_sec*1000000000 + (int64_t)ts.tv_nsec;
+}
 
-    ~IMUInterface() { };
+int64_t my_time_realtime_ns()
+{
+	struct timespec ts;
+	if(clock_gettime(CLOCK_REALTIME, &ts)){
+		fprintf(stderr,"ERROR calling clock_gettime\n");
+		return -1;
+	}
+	return (int64_t)ts.tv_sec*1000000000 + (int64_t)ts.tv_nsec;
+}
 
-    int  GetNumClients();
-    void AdvertiseTopics();
-    void StopAdvertising();
+
+// sleep and timing functions, TODO these should go into a misc.c!
+void my_nanosleep(uint64_t ns){
+	struct timespec req,rem;
+	req.tv_sec = ns/1000000000;
+	req.tv_nsec = ns%1000000000;
+	// loop untill nanosleep sets an error or finishes successfully
+	errno=0; // reset errno to avoid false detection
+	while(nanosleep(&req, &rem) && errno==EINTR){
+		req.tv_sec = rem.tv_sec;
+		req.tv_nsec = rem.tv_nsec;
+	}
+	return;
+}
 
 
-    sensor_msgs::Imu& GetImuMsg(){
-        return m_imuMsg;
-    }
+int my_loop_sleep(double rate_hz, int64_t* next_time)
+{
+	int64_t current_time = my_time_monotonic_ns();
 
-    ros::Publisher& GetPublisher(){
-        return m_rosPublisher;
-    }
+	// static variable so we remember when we last woke up
+	if(*next_time<=0){
+		*next_time = current_time;
+	}
 
-private:
+	// try to maintain output data rate
+	*next_time += (1000000000.0/rate_hz);
 
-    sensor_msgs::Imu               m_imuMsg;                ///< Imu message
-    ros::Publisher                 m_rosPublisher;          ///< Imu publisher
+	// uh oh, we fell behind, reset
+	if(*next_time<=current_time){
+		*next_time = current_time + (1000000000.0/rate_hz);
+		return 0;
+	}
 
-};
-#endif
+	// normal operation
+	my_nanosleep(*next_time-current_time);
+	return 0;
+}
+

@@ -31,43 +31,50 @@
  * POSSIBILITY OF SUCH DAMAGE.
  ******************************************************************************/
 
-#ifndef IMU_MPA_INTERFACE
-#define IMU_MPA_INTERFACE
 
-#include <ros/ros.h>
-#include <sensor_msgs/Imu.h>
+#ifndef CONFIG_FILE_H
+#define CONFIG_FILE_H
 
-#include "generic_interface.h"
-
-
-class IMUInterface: public GenericInterface
-{
-public:
-    bool firstPckt{true}; //flag for first image in stereo pair
-    ros::Time prevTS;//prev timestamp for sync ordering of stereo images
-    IMUInterface(ros::NodeHandle rosNodeHandle,
-                 ros::NodeHandle rosNodeHandleParams,
-                 const char*     name);
-
-    ~IMUInterface() { };
-
-    int  GetNumClients();
-    void AdvertiseTopics();
-    void StopAdvertising();
-
-
-    sensor_msgs::Imu& GetImuMsg(){
-        return m_imuMsg;
-    }
-
-    ros::Publisher& GetPublisher(){
-        return m_rosPublisher;
-    }
-
-private:
-
-    sensor_msgs::Imu               m_imuMsg;                ///< Imu message
-    ros::Publisher                 m_rosPublisher;          ///< Imu publisher
-
-};
+#ifdef __cplusplus
+extern "C" {
 #endif
+
+#include <voxl_imu_server.h>
+
+
+////////////////////////////////////////////////////////////////////////////////
+// declare all config file fields here. define them in config_file.c
+////////////////////////////////////////////////////////////////////////////////
+extern int imu_enable[N_IMUS];
+extern int bus[N_IMUS];
+extern double imu_sample_rate_hz[N_IMUS];
+extern double imu_lp_cutoff_freq_hz[N_IMUS];
+extern int imu_rotate_common_frame[N_IMUS];
+extern double imu_fifo_poll_rate_hz[N_IMUS];
+
+/**
+ * load the config file and populate the above extern variables
+ *
+ * @return     0 on success, -1 on failure
+ */
+int config_file_read(void);
+
+
+/**
+ * @brief      prints the current configuration values to the screen
+ *
+ *             this includes all of the extern variables listed above. If this
+ *             is called before config_file_load then it will print the default
+ *             values.
+ *
+ * @return     0 on success, -1 on failure
+ */
+int config_file_print(void);
+
+
+#ifdef __cplusplus
+}
+#endif
+
+
+#endif // end #define CONFIG_FILE_H

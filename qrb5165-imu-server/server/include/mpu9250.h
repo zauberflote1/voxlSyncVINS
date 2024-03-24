@@ -31,43 +31,25 @@
  * POSSIBILITY OF SUCH DAMAGE.
  ******************************************************************************/
 
-#ifndef IMU_MPA_INTERFACE
-#define IMU_MPA_INTERFACE
+#ifndef MPU9250_H
+#define MPU9250_H
 
-#include <ros/ros.h>
-#include <sensor_msgs/Imu.h>
+#include "imu_interface.h"
 
-#include "generic_interface.h"
+/**
+ * All of these functions are mpu9250-specific implementations of the functions
+ * delared in imu_interface.h
+ */
 
-
-class IMUInterface: public GenericInterface
-{
-public:
-    bool firstPckt{true}; //flag for first image in stereo pair
-    ros::Time prevTS;//prev timestamp for sync ordering of stereo images
-    IMUInterface(ros::NodeHandle rosNodeHandle,
-                 ros::NodeHandle rosNodeHandleParams,
-                 const char*     name);
-
-    ~IMUInterface() { };
-
-    int  GetNumClients();
-    void AdvertiseTopics();
-    void StopAdvertising();
+int mpu9250_detect(int bus);
+int mpu9250_init(int bus, double sample_rate_hz, int lp_cutoff_freq_hz);
+int mpu9250_close(int bus);
+int mpu9250_basic_read(int bus, imu_data_t* data);
+int mpu9250_fifo_reset(int bus);
+int mpu9250_fifo_start(int bus);
+int mpu9250_fifo_stop(int bus);
+int mpu9250_fifo_read(int bus, imu_data_t* data, int* packets, uint8_t* fifo_buffer);
+int mpu9250_self_test(int bus, imu_self_test_result_t* result);
 
 
-    sensor_msgs::Imu& GetImuMsg(){
-        return m_imuMsg;
-    }
-
-    ros::Publisher& GetPublisher(){
-        return m_rosPublisher;
-    }
-
-private:
-
-    sensor_msgs::Imu               m_imuMsg;                ///< Imu message
-    ros::Publisher                 m_rosPublisher;          ///< Imu publisher
-
-};
-#endif
+#endif // MPU9250_H
