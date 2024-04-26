@@ -1,3 +1,6 @@
+#TODO
+NEED TO SYNC THIS WITH LATEST VERSIONS...
+
 # voxlSyncVINS
 ## VOXL2 Package Edits for proper external VINS usage (ROS) 
 This a modified fork from the original ModalAI Gitlab. Please refer to their repo for proper documentation.
