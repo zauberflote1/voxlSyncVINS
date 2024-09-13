@@ -1,8 +1,0 @@
-Package: qrb5165-imu-server
-Version: 1.0.1
-Section: base
-Priority: optional
-Architecture: arm64
-Depends: libqrb5165-io,libmodal-pipe(>=2.0.0),librc-math(>=1.3.0),libmodal-json,voxl-cpu-monitor(>=0.2.0)
-Maintainer: james@modalai.com
-Description: QRB5165 IMU interface for Modal Pipe Architecture

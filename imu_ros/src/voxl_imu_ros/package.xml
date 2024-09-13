@@ -1,0 +1,24 @@
+<?xml version="1.0"?>
+<package format="2">
+  <name>voxl_imu_ros</name>
+  <version>0.0.1</version>
+  <description>The voxl_imu_ros package</description>
+  <maintainer email="picaalada@gmail.com">ZBFT</maintainer>
+  <license>BSD</license>
+  
+  
+  <buildtool_depend>catkin</buildtool_depend>
+  
+  <!-- Declare build, buildtool, and exec dependencies -->
+  <build_depend>roscpp</build_depend>
+  <build_depend>sensor_msgs</build_depend>
+  <build_depend>std_msgs</build_depend>
+  <build_depend>tf</build_depend> <!-- Add any other build dependencies here -->
+  
+  <buildtool_depend>catkin</buildtool_depend>
+
+  <exec_depend>roscpp</exec_depend>
+  <exec_depend>sensor_msgs</exec_depend>
+  <exec_depend>std_msgs</exec_depend>
+  <exec_depend>tf</exec_depend>
+</package>
