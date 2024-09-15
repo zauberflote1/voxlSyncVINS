@@ -96,7 +96,7 @@ void readThreadFunc(int id) {
 
         // Real-time considerations apply --> WE SET THE IMU TO 200HZ (~204 DUE TO CLOCK SPEED)
         //BUT WE GO FASTER TO AVOID DATA LOSS DUE TO SCHDULER DELAYS, ALSO WE AVOID REPEATED DATA BY CHECKING THE INTERRUPT
-        ros::Duration(0.001).sleep();  
+        ros::Duration(0.005).sleep();  
     }
 }
 
@@ -148,16 +148,18 @@ int main(int argc, char **argv) {
         return -1;
     }
 
-    // Initialize IMUs
-    for (int i = 0; i < 1; ++i) {
-        if (!imu_init(i)) {
-            ROS_INFO("IMU %d initialized successfully.", i);
-        } else {
-            ROS_ERROR("Failed to initialize IMU %d.", i);
-            quit(-1);
-            return -1;
-        }
-    }
+
+    //NO NEED TO INITIALIZE IMU, IF IMU SERVER IS ALREADY RUNNING
+    // // Initialize IMUs
+    // for (int i = 0; i < 1; ++i) {
+    //     if (!imu_init(i)) {
+    //         ROS_INFO("IMU %d initialized successfully.", i);
+    //     } else {
+    //         ROS_ERROR("Failed to initialize IMU %d.", i);
+    //         quit(-1);
+    //         return -1;
+    //     }
+    // }
 
     // Start reading threads for each enabled IMU
     std::vector<boost::thread> threads;
